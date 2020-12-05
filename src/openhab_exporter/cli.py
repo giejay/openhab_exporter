@@ -31,11 +31,12 @@ from twisted.internet.endpoints import serverFromString
 from hyperlink import URL
 
 from .metrics import MetricsPage
+from .metricsThings import MetricsThingPage
 from .root import RootPage
 from ._version import __version__
 
 default_endpoint = 'tcp:port=9266'
-default_openhab = URL.from_text('http://127.0.0.1:8080/')
+default_openhab = URL.from_text('http://192.168.2.15:8080/')
 
 def cli():
     parser = argparse.ArgumentParser(prog = __version__.package)
@@ -52,8 +53,10 @@ def cli():
     log.debug('Connecting to {openhab:}', openhab = options.openhab.to_text())
 
     metrics = MetricsPage(reactor, options.openhab)
+    metricsThings = MetricsThingPage(reactor, options.openhab)
     root = RootPage()
     root.putChild(b'metrics', metrics)
+    root.putChild(b'metric-things', metricsThings)
     site = Site(root)
     server = serverFromString(reactor, options.endpoint)
     server.listen(site)

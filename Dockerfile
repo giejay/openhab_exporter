@@ -21,12 +21,14 @@ LABEL maintainer="Jeffrey C. Ollie <jeff@ocjtech.us>"
 
 ENV LANG C.UTF-8
 
+RUN apk add --no-cache gcc musl-dev libffi-dev openssl-dev && \
+  pip install 'Twisted[tls]' 'arrow'
+
 COPY setup.py /src/setup.py
+
 COPY src /src/src
 
-RUN apk add --no-cache gcc musl-dev libffi-dev openssl-dev && \
-  pip install 'Twisted[tls]' 'arrow' && \
-  cd /src && python setup.py install && \
+RUN cd /src && python setup.py install && \
   rm -rf /src && \
   apk del gcc musl-dev libffi-dev openssl-dev
 
