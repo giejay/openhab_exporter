@@ -47,6 +47,7 @@ class Gather(Protocol):
 class MetricsThingPage(Resource):
     log = Logger()
     isLeaf = True
+    statusToNumber = {'ONLINE': 0, 'OFFLINE': 1, 'UNINITIALIZED': 2, 'REMOVING': 3}
 
     def __init__(self, reactor, openhab):
         self.reactor = reactor
@@ -90,6 +91,6 @@ class MetricsThingPage(Resource):
         request.setHeader(b'Content-Type', b'text/plain; charset=utf-8; version=0.0.4')
 
         for item in data:
-            request.write('openhab_thing{{name="{}"}} {}\n'.format(item['label'], item['statusInfo']['status']).encode('utf-8'))
+            request.write('openhab_thing{{name="{}"}} {}\n'.format(item['label'], self.statusToNumber[item['statusInfo']['status']]).encode('utf-8'))
 
         request.finish()
