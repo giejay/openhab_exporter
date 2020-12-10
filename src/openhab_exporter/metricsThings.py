@@ -47,7 +47,7 @@ class Gather(Protocol):
 class MetricsThingPage(Resource):
     log = Logger()
     isLeaf = True
-    statusToNumber = {'ONLINE': 0, 'OFFLINE': 1, 'UNINITIALIZED': 2, 'REMOVING': 3}
+    statusToNumber = {'ONLINE': 0, 'OFFLINE': 1, 'UNINITIALIZED': 2, 'REMOVING': 3, 'UNKNOWN': 4}
 
     def __init__(self, reactor, openhab):
         self.reactor = reactor
