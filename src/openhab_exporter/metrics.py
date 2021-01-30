@@ -48,18 +48,21 @@ class MetricsPage(Resource):
     log = Logger()
     isLeaf = True
 
-    def __init__(self, reactor, openhab):
+    def __init__(self, reactor, openhab, authorization):
         self.reactor = reactor
         self.openhab = openhab
         self.api = openhab.child('rest', 'items').to_uri().to_text().encode('utf-8')
         self.metrics = {}
+        self.authorization = authorization
         self.agent = Agent(self.reactor)
         Resource.__init__(self)
 
     def render_GET(self, request):
         d = self.agent.request(b'GET',
                                self.api,
-                               Headers({b'Accept': [b'application/json']}),
+                               Headers({
+                                   b'Accept': [b'application/json'],
+                                    "authorization": ["Basic " + self.authorization]}),
                                None)
         d.addCallback(self.handleResult, request)
         d.addErrback(self.handleError, request)

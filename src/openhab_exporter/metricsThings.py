@@ -49,18 +49,20 @@ class MetricsThingPage(Resource):
     isLeaf = True
     statusToNumber = {'ONLINE': 0, 'OFFLINE': 1, 'UNINITIALIZED': 2, 'REMOVING': 3, 'UNKNOWN': 4}
 
-    def __init__(self, reactor, openhab):
+    def __init__(self, reactor, openhab, authorization):
         self.reactor = reactor
         self.openhab = openhab
         self.api = openhab.child('rest', 'things').to_uri().to_text().encode('utf-8')
         self.metrics = {}
+        self.authorization = authorization
         self.agent = Agent(self.reactor)
         Resource.__init__(self)
 
     def render_GET(self, request):
         d = self.agent.request(b'GET',
                                self.api,
-                               Headers({b'Accept': [b'application/json']}),
+                               Headers({b'Accept': [b'application/json'],
+                                "authorization": ["Basic " + self.authorization]}),
                                None)
         d.addCallback(self.handleResult, request)
         d.addErrback(self.handleError, request)

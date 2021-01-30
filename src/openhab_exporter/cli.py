@@ -28,6 +28,8 @@ from twisted.logger import textFileLogObserver
 from twisted.internet import reactor
 from twisted.internet.endpoints import serverFromString
 
+import os
+
 from hyperlink import URL
 
 from .metrics import MetricsPage
@@ -36,7 +38,8 @@ from .root import RootPage
 from ._version import __version__
 
 default_endpoint = 'tcp:port=9266'
-default_openhab = URL.from_text('http://192.168.2.15:8080/')
+default_openhab = URL.from_text(os.environ['DEFAULT_OPENHAB_URL'])
+creds = os.environ['OPENHAB_AUTH']
 
 def cli():
     parser = argparse.ArgumentParser(prog = __version__.package)
@@ -52,8 +55,8 @@ def cli():
     log.debug('Listening on {endpoint:}', endpoint = options.endpoint)
     log.debug('Connecting to {openhab:}', openhab = options.openhab.to_text())
 
-    metrics = MetricsPage(reactor, options.openhab)
-    metricsThings = MetricsThingPage(reactor, options.openhab)
+    metrics = MetricsPage(reactor, options.openhab, creds)
+    metricsThings = MetricsThingPage(reactor, options.openhab, creds)
     root = RootPage()
     root.putChild(b'metrics', metrics)
     root.putChild(b'metric-things', metricsThings)
